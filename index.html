@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Sales Dashboard</title>
+    <style>
+
+      /* ✅ ALL CSS GOES HERE */
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background-color: #f0f2f5;
+        font-family: Arial, sans-serif;
+      }
+
+      .header {
+        background-color: #1a1a2e;
+        color: white;
+        padding: 20px 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .header h1 {
+        font-size: 24px;
+        letter-spacing: 1px;
+      }
+
+      .header h1 span {
+        color: #4f9cf9;
+      }
+
+      .header p {
+        font-size: 13px;
+        color: #aaaaaa;
+        margin-top: 4px;
+      }
+
+      .header-date {
+        background-color: #4f9cf9;
+        color: white;
+        padding: 8px 18px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: bold;
+      }
+
+      .kpi-section {
+        display: flex;
+        gap: 20px;
+        padding: 30px 40px;
+        flex-wrap: wrap;
+      }
+
+      .kpi-card {
+        background-color: white;
+        border-radius: 12px;
+        padding: 24px;
+        flex: 1;
+        min-width: 200px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        transition: transform 0.2s;
+      }
+
+      .kpi-card:hover {
+        transform: translateY(-4px);
+      }
+
+      .kpi-icon {
+        font-size: 28px;
+        margin-bottom: 12px;
+      }
+
+      .kpi-label {
+        font-size: 13px;
+        color: #888888;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        margin-bottom: 8px;
+      }
+
+      .kpi-value {
+        font-size: 28px;
+        font-weight: 800;
+        color: #1a1a2e;
+        margin-bottom: 8px;
+      }
+
+      .kpi-change {
+        font-size: 13px;
+        color: #888;
+      }
+
+      .kpi-change.up {
+        color: #1db86e;
+        font-weight: 600;
+      }
+
+      .kpi-change.down {
+        color: #ff5c38;
+        font-weight: 600;
+      }
+/* Bar chart section wrapper */
+      .chart-section {
+        padding: 0px 40px 30px 40px;
+      }
+
+      /* The white card that wraps the chart */
+      .chart-card {
+        background-color: white;
+        border-radius: 12px;
+        padding: 28px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      }
+
+      /* Chart title */
+      .chart-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #1a1a2e;
+        margin-bottom: 4px;
+      }
+
+      /* Small grey text under title */
+      .chart-subtitle {
+        font-size: 13px;
+        color: #888;
+        margin-bottom: 24px;
+      }
+
+      /* The row that holds all bars */
+      .bar-row {
+        display: flex;
+        align-items: flex-end;
+        gap: 12px;
+        height: 200px;
+      }
+
+      /* Each bar + label together */
+      .bar-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex: 1;
+        height: 100%;
+        justify-content: flex-end;
+        gap: 8px;
+      }
+
+      /* The actual colored bar */
+      .bar {
+        width: 100%;
+        background: linear-gradient(180deg, #4f9cf9, #1a6ef5);
+        border-radius: 6px 6px 0 0;
+        transition: opacity 0.2s;
+        cursor: pointer;
+        position: relative;
+      }
+
+      /* Bar gets lighter on hover */
+      .bar:hover {
+        opacity: 0.75;
+      }
+
+      /* Tooltip that shows on hover */
+      .bar:hover::after {
+        content: attr(data-value);
+        position: absolute;
+        top: -30px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #1a1a2e;
+        color: white;
+        padding: 3px 8px;
+        border-radius: 6px;
+        font-size: 12px;
+        white-space: nowrap;
+      }
+
+      /* Month label under each bar */
+      .bar-label {
+        font-size: 11px;
+        color: #888;
+        text-align: center;
+      }
+      /* Table section wrapper */
+      .table-section {
+        padding: 0px 40px 40px 40px;
+      }
+
+      /* White card wrapping the table */
+      .table-card {
+        background-color: white;
+        border-radius: 12px;
+        padding: 28px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      }
+
+      /* Top row - title on left, button on right */
+      .table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      /* Table title */
+      .table-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #1a1a2e;
+      }
+
+      /* Small grey text under title */
+      .table-subtitle {
+        font-size: 13px;
+        color: #888;
+        margin-top: 3px;
+      }
+
+      /* Export button */
+      .export-btn {
+        background-color: #1a1a2e;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-size: 13px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: background 0.2s;
+      }
+
+      /* Button darkens on hover */
+      .export-btn:hover {
+        background-color: #4f9cf9;
+      }
+
+      /* The actual table */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      /* Table header row */
+      thead th {
+        text-align: left;
+        font-size: 12px;
+        font-weight: 700;
+        color: #888;
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+        padding: 0 16px 14px 16px;
+        border-bottom: 2px solid #f0f2f5;
+      }
+
+      /* Each data row */
+      tbody tr {
+        transition: background 0.15s;
+        cursor: pointer;
+      }
+
+      /* Row highlights on hover */
+      tbody tr:hover {
+        background-color: #f8f9ff;
+      }
+
+      /* Each cell */
+      tbody td {
+        padding: 14px 16px;
+        font-size: 14px;
+        border-bottom: 1px solid #f0f2f5;
+        color: #1a1a2e;
+      }
+
+      /* Rank number styling */
+      .rank {
+        font-weight: 800;
+        color: #888;
+        font-size: 13px;
+      }
+
+      /* Product name bold */
+      .product-name {
+        font-weight: 600;
+      }
+
+      /* Category pill badge */
+      .category-pill {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: capitalize;
+      }
+
+      .pill-blue {
+        background-color: #e8f0fe;
+        color: #1a6ef5;
+      }
+
+      .pill-green {
+        background-color: #d8f5e9;
+        color: #117a45;
+      }
+
+      .pill-orange {
+        background-color: #fff0e8;
+        color: #c94b00;
+      }
+
+      .pill-yellow {
+        background-color: #fff8e0;
+        color: #9a6f00;
+      }
+
+      /* Revenue progress bar */
+      .progress-wrap
+    </style>
+        <!--  ☝️ ALL CSS ENDS HERE -->
+  </head>
+
+  <body>
+    <!--  ✅ ALL HTML GOES HERE -->
+
+    <!-- HEADER -->
+    <div class="header">
+      <div>
+        <h1>Sales & <span>Revenue</span> Dashboard</h1>
+        <p>Track your sales, revenue and top products</p>
+      </div>
+      <div class="header-date">📅 May 2026</div>
+    </div>
+
+    <!-- KPI CARDS -->
+    <div class="kpi-section">
+
+      <div class="kpi-card">
+        <div class="kpi-icon">💰</div>
+        <div class="kpi-label">Total Revenue</div>
+        <div class="kpi-value">$91,200</div>
+        <div class="kpi-change up">↑ 14.2% vs last month</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon">🛒</div>
+        <div class="kpi-label">Total Sales</div>
+        <div class="kpi-value">4,730</div>
+        <div class="kpi-change up">↑ 8.7% vs last month</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon">📦</div>
+        <div class="kpi-label">Top Product</div>
+        <div class="kpi-value" style="font-size:20px;">VS Code Pro</div>
+        <div class="kpi-change" style="color:#888;">Best seller this month</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon">📈</div>
+        <div class="kpi-label">Avg Order Value</div>
+        <div class="kpi-value">$19</div>
+        <div class="kpi-change up">↑ 5.1% improvement</div>
+      </div>
+
+    </div>
+
+    <!--  ☝️ ALL HTML ENDS HERE -->
+<!-- BAR CHART SECTION -->
+    <div class="chart-section">
+      <div class="chart-card">
+
+        <div class="chart-title">📊 Monthly Revenue Trend</div>
+        <div class="chart-subtitle">Total revenue earned each month in 2024</div>
+
+        <div class="bar-row">
+
+          <div class="bar-wrap">
+            <div class="bar" style="height:45%" data-value="$41,200"></div>
+            <div class="bar-label">Jan</div>
+          </div>
+
+          <div class="bar-wrap">
+            <div class="bar" style="height:42%" data-value="$38,900"></div>
+            <div class="bar-label">Feb</div>
+          </div>
+
+          <div class="bar-wrap">
+            <div class="bar" style="height:57%" data-value="$52,300"></div>
+            <div class="bar-label">Mar</div>
+          </div>
+
+          <div class="bar-wrap">
+            <div class="bar" style="height:52%" data-value="$47,800"></div>
+            <div class="bar-label">Apr</div>
+          </div>
+
+          <div class="bar-wrap">
+            <div class="bar" style="height:67%" data-value="$61,200"></div>
+            <div class="bar-label">May</div>
+          </div>
+
+          <div class="bar-wrap">
+            <div class="bar" style="height:61%" data-value="$55,400"></div>
+            <div class="bar-label">Jun</div>
+          </div>
+
+          <div class="bar-wrap">
+            <div class="bar" style="height:76%" data-value="$69,800"></div>
+            <div class="bar-label">Jul</div>
+          </div>
+
+          <div class="bar-wrap">
+            <div class="bar" style="height:79%" data-value="$72,100"></div>
+            <div class="bar-label">Aug</div>
+          </div>
+
+          <div class="bar-wrap">
+            <div class="bar" style="height:71%" data-value="$65,300"></div>
+            <div class="bar-label">Sep</div>
+          </div>
+
+          <div class="bar-wrap">
+            <div class="bar" style="height:86%" data-value="$78,900"></div>
+            <div class="bar-label">Oct</div>
+          </div>
+
+          <div class="bar-wrap">
+            <div class="bar" style="height:91%" data-value="$83,400"></div>
+            <div class="bar-label">Nov</div>
+          </div>
+
+          <div class="bar-wrap">
+            <div class="bar" style="height:100%" data-value="$91,200"></div>
+            <div class="bar-label">Dec</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <!-- PRODUCTS TABLE SECTION -->
+    <div class="table-section">
+      <div class="table-card">
+
+        <div class="table-header">
+          <div>
+            <div class="table-title">🏆 Top Performing Products</div>
+            <div class="table-subtitle">Ranked by total revenue generated</div>
+          </div>
+          <button class="export-btn">⬇ Export CSV</button>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Product</th>
+              <th>Category</th>
+              <th>Units Sold</th>
+              <th>Revenue</th>
+              <th>Share</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <tr>
+              <td><span class="rank">#1</span></td>
+              <td><span class="product-name">VS Code Pro Sub</span></td>
+              <td><span class="category-pill pill-yellow">Software</span></td>
+              <td>2,210</td>
+              <td><strong>$218,790</strong></td>
+              <td>
+                <div class="progress-wrap">
+                  <div class="progress-fill" style="width:100%"></div>
+                </div>
+              </td>
+              <td><span class="status-hot">🔥 Hot</span></td>
+            </tr>
+
+            <tr>
+              <td><span class="rank">#2</span></td>
+              <td><span class="product-name">Wireless Earbuds</span></td>
+              <td><span class="category-pill pill-blue">Electronics</span></td>
+              <td>1,540</td>
+              <td><strong>$121,660</strong></td>
+              <td>
+                <div class="progress-wrap">
+                  <div class="progress-fill" style="width:55%"></div>
+                </div>
+              </td>
+              <td><span class="status-hot">🔥 Hot</span></td>
+            </tr>
+
+            <tr>
+              <td><span class="rank">#3</span></td>
+              <td><span class="product-name">Protein Shake 2lb</span></td>
+              <td><span class="category-pill pill-green">Food</span></td>
+              <td>1,980</td>
+              <td><strong>$77,220</strong></td>
+              <td>
+                <div class="progress-wrap">
+                  <div class="progress-fill" style="width:35%"></div>
+                </div>
+              </td>
+              <td><span class="status-growing">📈 Growing</span></td>
+            </tr>
+
+            <tr>
+              <td><span class="rank">#4</span></td>
+              <td><span class="product-name">Figma Team Plan</span></td>
+              <td><span class="category-pill pill-yellow">Software</span></td>
+              <td>870</td>
+              <td><strong>$129,630</strong></td>
+              <td>
+                <div class="progress-wrap">
+                  <div class="progress-fill" style="width:59%"></div>
+                </div>
+              </td>
+              <td><span class="status-growing">📈 Growing</span></td>
+            </tr>
+
+            <tr>
+              <td><span class="rank">#5</span></td>
+              <td><span class="product-name">Nike Air Max 2024</span></td>
+              <td><span class="category-pill pill-orange">Clothing</span></td>
+              <td>874</td>
+              <td><strong>$130,226</strong></td>
+              <td>
+                <div class="progress-wrap">
+                  <div class="progress-fill" style="width:59%"></div>
+                </div>
+              </td>
+              <td><span class="status-stable">✅ Stable</span></td>
+            </tr>
+
+            <tr>
+              <td><span class="rank">#6</span></td>
+              <td><span class="product-name">Smart Watch S9</span></td>
+              <td><span class="category-pill pill-blue">Electronics</span></td>
+              <td>420</td>
+              <td><strong>$138,180</strong></td>
+              <td>
+                <div class="progress-wrap">
+                  <div class="progress-fill" style="width:63%"></div>
+                </div>
+              </td>
+              <td><span class="status-stable">✅ Stable</span></td>
+            </tr>
+
+            <tr>
+              <td><span class="rank">#7</span></td>
+              <td><span class="product-name">MacBook Pro 14"</span></td>
+              <td><span class="category-pill pill-blue">Electronics</span></td>
+              <td>312</td>
+              <td><strong>$592,488</strong></td>
+              <td>
+                <div class="progress-wrap">
+                  <div class="progress-fill" style="width:80%"></div>
+                </div>
+              </td>
+              <td><span class="status-stable">✅ Stable</span></td>
+            </tr>
+
+          </tbody>
+        </table>
+
+      </div>
+    </div>
+    <script>
+
+      // ============================================
+      // EXPORT CSV BUTTON
+      // When clicked → downloads a real Excel file
+      // ============================================
+
+      // Step 1 - Find the export button on the page
+      const exportBtn = document.querySelector('.export-btn');
+
+      // Step 2 - When button is clicked, run this function
+      exportBtn.addEventListener('click', function() {
+
+        // Step 3 - This is the data we want to export
+        // Each line = one row in Excel
+        // Columns separated by commas
+        const csvData = [
+          ['Rank', 'Product', 'Category', 'Units Sold', 'Revenue', 'Status'],
+          ['1', 'VS Code Pro Sub',    'Software',    '2210', '$218,790', 'Hot'],
+          ['2', 'Wireless Earbuds',   'Electronics', '1540', '$121,660', 'Hot'],
+          ['3', 'Protein Shake 2lb',  'Food',        '1980', '$77,220',  'Growing'],
+          ['4', 'Figma Team Plan',    'Software',    '870',  '$129,630', 'Growing'],
+          ['5', 'Nike Air Max 2024',  'Clothing',    '874',  '$130,226', 'Stable'],
+          ['6', 'Smart Watch S9',     'Electronics', '420',  '$138,180', 'Stable'],
+          ['7', 'MacBook Pro 14',     'Electronics', '312',  '$592,488', 'Stable'],
+        ];
+
+        // Step 4 - Convert each row into a single line of text
+        // Example: ['1', 'VS Code', 'Software'] → "1,VS Code,Software"
+        let csvText = '';
+        csvData.forEach(function(row) {
+          csvText += row.join(',') + '\n';
+        });
+
+        // Step 5 - Create an invisible download link
+        const link = document.createElement('a');
+
+        // Step 6 - Attach the CSV text to that link
+        link.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvText);
+
+        // Step 7 - Set the filename for download
+        link.download = 'sales_report.csv';
+
+        // Step 8 - Click the link automatically (triggers download)
+        link.click();
+
+        // Step 9 - Show confirmation message to user
+        showToast('✅ CSV Downloaded! Open it in Excel.');
+
+      });
+
+
+      // ============================================
+      // TOAST NOTIFICATION
+      // Small popup message at bottom of screen
+      // ============================================
+
+      function showToast(message) {
+
+        // Step 1 - Create a new div element
+        const toast = document.createElement('div');
+
+        // Step 2 - Put the message inside it
+        toast.textContent = message;
+
+        // Step 3 - Style it to look like a popup
+        toast.style.cssText = `
+          position: fixed;
+          bottom: 30px;
+          right: 30px;
+          background-color: #1a1a2e;
+          color: white;
+          padding: 14px 24px;
+          border-radius: 10px;
+          font-size: 14px;
+          font-weight: 600;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+          z-index: 9999;
+          opacity: 0;
+          transition: opacity 0.3s;
+        `;
+
+        // Step 4 - Add it to the page
+        document.body.appendChild(toast);
+
+        // Step 5 - Fade it IN after a tiny delay
+        setTimeout(function() {
+          toast.style.opacity = '1';
+        }, 10);
+
+        // Step 6 - Fade it OUT after 3 seconds
+        setTimeout(function() {
+          toast.style.opacity = '0';
+
+          // Step 7 - Remove it from page after fade out
+          setTimeout(function() {
+            toast.remove();
+          }, 300);
+
+        }, 3000);
+
+      }
+
+
+      // ============================================
+      // BAR HOVER HIGHLIGHT
+      // Makes bars slightly glow when hovered
+      // ============================================
+
+      // Find all bars on the page
+      const allBars = document.querySelectorAll('.bar');
+
+      // Loop through each bar
+      allBars.forEach(function(bar) {
+
+        // When mouse enters the bar
+        bar.addEventListener('mouseenter', function() {
+          bar.style.boxShadow = '0 4px 20px rgba(79, 156, 249, 0.5)';
+        });
+
+        // When mouse leaves the bar
+        bar.addEventListener('mouseleave', function() {
+          bar.style.boxShadow = 'none';
+        });
+
+      });
+
+
+      // ============================================
+      // ROW CLICK — SHOW PRODUCT DETAILS
+      // Click any table row to see a popup
+      // ============================================
+
+      // All product data stored here
+      const products = [
+        { rank:1, name:'VS Code Pro Sub',   category:'Software',    units:2210, revenue:'$218,790', status:'🔥 Hot'      },
+        { rank:2, name:'Wireless Earbuds',  category:'Electronics', units:1540, revenue:'$121,660', status:'🔥 Hot'      },
+        { rank:3, name:'Protein Shake 2lb', category:'Food',        units:1980, revenue:'$77,220',  status:'📈 Growing'  },
+        { rank:4, name:'Figma Team Plan',   category:'Software',    units:870,  revenue:'$129,630', status:'📈 Growing'  },
+        { rank:5, name:'Nike Air Max 2024', category:'Clothing',    units:874,  revenue:'$130,226', status:'✅ Stable'   },
+        { rank:6, name:'Smart Watch S9',    category:'Electronics', units:420,  revenue:'$138,180', status:'✅ Stable'   },
+        { rank:7, name:'MacBook Pro 14',    category:'Electronics', units:312,  revenue:'$592,488', status:'✅ Stable'   },
+      ];
+
+      // Find all table rows
+      const allRows = document.querySelectorAll('tbody tr');
+
+      // Add click to each row
+      allRows.forEach(function(row, index) {
+        row.addEventListener('click', function() {
+
+          // Get the product for this row
+          const p = products[index];
+
+          // Show alert with product details
+          alert(
+            '📦 Product Details\n\n' +
+            'Name     : ' + p.name + '\n' +
+            'Category : ' + p.category + '\n' +
+            'Units    : ' + p.units + '\n' +
+            'Revenue  : ' + p.revenue + '\n' +
+            'Status   : ' + p.status
+          );
+
+        });
+      });
+
+    </script>
+    
+
+  </body>
+</html>
