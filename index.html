@@ -4,7 +4,7 @@
     <title>Sales Dashboard</title>
     <style>
 
-      /* ✅ ALL CSS GOES HERE */
+      
 
       * {
         margin: 0;
@@ -324,11 +324,11 @@
       /* Revenue progress bar */
       .progress-wrap
     </style>
-        <!--  ☝️ ALL CSS ENDS HERE -->
+        
   </head>
 
   <body>
-    <!--  ✅ ALL HTML GOES HERE -->
+    
 
     <!-- HEADER -->
     <div class="header">
@@ -372,7 +372,7 @@
 
     </div>
 
-    <!--  ☝️ ALL HTML ENDS HERE -->
+    
 <!-- BAR CHART SECTION -->
     <div class="chart-section">
       <div class="chart-card">
@@ -576,20 +576,15 @@
     </div>
     <script>
 
-      // ============================================
-      // EXPORT CSV BUTTON
-      // When clicked → downloads a real Excel file
-      // ============================================
+    
 
-      // Step 1 - Find the export button on the page
+      
       const exportBtn = document.querySelector('.export-btn');
 
-      // Step 2 - When button is clicked, run this function
+      
       exportBtn.addEventListener('click', function() {
 
-        // Step 3 - This is the data we want to export
-        // Each line = one row in Excel
-        // Columns separated by commas
+        
         const csvData = [
           ['Rank', 'Product', 'Category', 'Units Sold', 'Revenue', 'Status'],
           ['1', 'VS Code Pro Sub',    'Software',    '2210', '$218,790', 'Hot'],
@@ -601,35 +596,31 @@
           ['7', 'MacBook Pro 14',     'Electronics', '312',  '$592,488', 'Stable'],
         ];
 
-        // Step 4 - Convert each row into a single line of text
-        // Example: ['1', 'VS Code', 'Software'] → "1,VS Code,Software"
+        
         let csvText = '';
         csvData.forEach(function(row) {
           csvText += row.join(',') + '\n';
         });
 
-        // Step 5 - Create an invisible download link
+        
         const link = document.createElement('a');
 
-        // Step 6 - Attach the CSV text to that link
+        
         link.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvText);
 
-        // Step 7 - Set the filename for download
+        
         link.download = 'sales_report.csv';
 
-        // Step 8 - Click the link automatically (triggers download)
+        
         link.click();
 
-        // Step 9 - Show confirmation message to user
+        
         showToast('✅ CSV Downloaded! Open it in Excel.');
 
       });
 
 
-      // ============================================
-      // TOAST NOTIFICATION
-      // Small popup message at bottom of screen
-      // ============================================
+      
 
       function showToast(message) {
 
@@ -656,19 +647,19 @@
           transition: opacity 0.3s;
         `;
 
-        // Step 4 - Add it to the page
+        
         document.body.appendChild(toast);
 
-        // Step 5 - Fade it IN after a tiny delay
+        
         setTimeout(function() {
           toast.style.opacity = '1';
         }, 10);
 
-        // Step 6 - Fade it OUT after 3 seconds
+        
         setTimeout(function() {
           toast.style.opacity = '0';
 
-          // Step 7 - Remove it from page after fade out
+          
           setTimeout(function() {
             toast.remove();
           }, 300);
@@ -678,10 +669,7 @@
       }
 
 
-      // ============================================
-      // BAR HOVER HIGHLIGHT
-      // Makes bars slightly glow when hovered
-      // ============================================
+      
 
       // Find all bars on the page
       const allBars = document.querySelectorAll('.bar');
@@ -702,10 +690,7 @@
       });
 
 
-      // ============================================
-      // ROW CLICK — SHOW PRODUCT DETAILS
-      // Click any table row to see a popup
-      // ============================================
+      
 
       // All product data stored here
       const products = [
